@@ -1,41 +1,21 @@
 const { dinero, toFormat } = window.dinero.js;
 const { COP } = window["@dinero.js/currencies"];
 
-/**
- * Los registros tienen esta forma
-   [
-       {
-            date: "Una fecha de un registro",
-            value: "Un valor de la venta del helado",
-            obs: ""
-        },
-        {
-            date: "Otra fecha de otro registro",
-            value: "otro valor de la venta del helado",
-            obs: "El detalle de los elementos comprados en el helado"
-        },
-        .
-        .
-        .
-    ]
- */
-
 const checkEmpty = async () => {
   if (localStorage.salesRecords === undefined) {
     localStorage.setItem("salesRecords", JSON.stringify([]));
-    console.log("first");
     console.log(localStorage.salesRecords);
   }
 };
 
 export const record = async (value, obs) => {
+
   let localLocale = moment();
   localLocale.locale("es");
   const transformer = ({ amount, currency }) => `$${amount} ${currency.code}`;
   const valueWithCurrency = dinero({ amount: value, currency: COP, scale: 0 });
 
   checkEmpty();
-  console.log("second");
   console.log(localStorage.salesRecords);
 
   const newRecordArray = await JSON.parse(localStorage.salesRecords);
@@ -44,7 +24,6 @@ export const record = async (value, obs) => {
     value: toFormat(valueWithCurrency, transformer),
     obs,
   });
-
   console.log("new Array");
   console.log(newRecordArray);
 
@@ -54,42 +33,45 @@ export const record = async (value, obs) => {
 };
 
 const showRecords = async () => {
+
   let salesRecordsTable = document.getElementById("salesRecords");
   let recordsHTML = `
-    <table class="table table-striped">
+    <table class = "table table-striped w-auto">
         <thead>
             <th>Fecha</th>
             <th>Valor</th>
+            <th>Descripcion</th>
         </thead>
         <tbody>
   `;
-
   console.log("third");
   console.log(localStorage.salesRecords);
   console.log("fourth");
   console.log(await JSON.parse(localStorage.salesRecords));
 
   if (localStorage.salesRecords) {
-    /**
-     * Debe hacer las correcciones según la forma que tienen los registros para mostrar 
-     * las fechas, valores y detalles de cada compra correctamente, la forma que tienen
-     * los registros están de la línea 4 a la 21
-     */
+
+    /*Variable que obtiene los registros en formato JSON*/
+    var registros = await JSON.parse(localStorage.salesRecords);
+    /*Variable contadora que sirve para obtener la posicion del registro*/
+    var cont = 0;
+
     (await JSON.parse(localStorage.getItem("salesRecords"))).forEach(
       (record) => {
-        /**
-         * El objeto record accede a cada elemento del arreglo de registros
-         */
+
+        /*Se organiza cada dato en la columna correspondiente*/
         recordsHTML += `
                 <tr         
-                    data-bs-toggle="tooltip" 
-                    data-bs-placement="bottom"
-                    title="${"error" /** Aquí se pone el detalle de la compra */}" 
-                >
-                    <td>${"error" /** Aquí va la fecha de cada compra */ }</td>
-                    <td>${"error" /** Aquí va  el valor de cada compra*/}</td>
+                    data-bs-toggle = "tooltip" 
+                    data-bs-placement = "bottom"
+                    title = "${"error" }">
+                    <td>${registros[cont]["date"]}</td>
+                    <td>${registros[cont]["value"]}</td>
+                    <td>${registros[cont]["obs"]}</td>
                 </tr>
             `;
+        /*Se le suma uno al contador para pasar al siguiente registro.*/
+        cont += 1;
       }
     );
     recordsHTML += `
@@ -98,7 +80,7 @@ const showRecords = async () => {
     `;
     salesRecordsTable.innerHTML = recordsHTML;
   } else {
-    salesRecordsTable.innerHTML = `<p class="m-3">No hay registros</p>`;
+    salesRecordsTable.innerHTML = `<p class = "m-3">No hay registros</p>`;
   }
 };
 
