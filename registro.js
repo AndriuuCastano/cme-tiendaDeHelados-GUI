@@ -20,16 +20,19 @@ export const record = async (value, obs) => {
 
   const newRecordArray = await JSON.parse(localStorage.salesRecords);
   newRecordArray.push({
+
     date: localLocale.format("DD MMM YY hh:mm a"),
     value: toFormat(valueWithCurrency, transformer),
     obs,
+
   });
-  console.log("new Array");
+
   console.log(newRecordArray);
 
   localStorage.setItem("salesRecords", JSON.stringify(newRecordArray));
 
   showRecords();
+
 };
 
 const showRecords = async () => {
@@ -44,34 +47,30 @@ const showRecords = async () => {
         </thead>
         <tbody>
   `;
-  console.log("third");
+
+  
   console.log(localStorage.salesRecords);
-  console.log("fourth");
+  
   console.log(await JSON.parse(localStorage.salesRecords));
 
   if (localStorage.salesRecords) {
 
-    /*Variable que obtiene los registros en formato JSON*/
-    var registros = await JSON.parse(localStorage.salesRecords);
-    /*Variable contadora que sirve para obtener la posicion del registro*/
-    var cont = 0;
-
     (await JSON.parse(localStorage.getItem("salesRecords"))).forEach(
       (record) => {
 
-        /*Se organiza cada dato en la columna correspondiente*/
         recordsHTML += `
                 <tr         
                     data-bs-toggle = "tooltip" 
                     data-bs-placement = "bottom"
                     title = "${"error" }">
-                    <td>${registros[cont]["date"]}</td>
-                    <td>${registros[cont]["value"]}</td>
-                    <td>${registros[cont]["obs"]}</td>
+
+                    <td>${record.date}</td>
+
+                    <td>${record.value}</td>
+
+                    <td>${record.obs}</td>
                 </tr>
             `;
-        /*Se le suma uno al contador para pasar al siguiente registro.*/
-        cont += 1;
       }
     );
     recordsHTML += `
@@ -85,3 +84,5 @@ const showRecords = async () => {
 };
 
 showRecords();
+
+// Andres Fabian Castaño - Daniel Palma Ramirez
